@@ -280,15 +280,6 @@ go_south(Plyr, State, X, Y) :-
     get(State, [X,Y2], Opp),
     go_south(Plyr, State, X, Y2).
 
-go_south(Plyr, State, X, Y) :-
-    Y2 is Y + 1,
-    get(State, [X,Y2], Plyr).
-
-go_south(Plyr, State, X, Y) :-
-    Y2 is Y + 1,
-    opponent(Plyr, Opp),  
-    get(State, [X,Y2], Opp),
-    go_south(Plyr, State, X, Y2).
 
 
 % Helper function to keep track of player/opp stone during comparison
