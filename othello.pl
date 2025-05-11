@@ -189,13 +189,12 @@ printList([H | L]) :-
 %% define moves(Plyr,State,MvList). 
 %   - returns list MvList of all legal moves Plyr can make in State
 %
+moves(Plyr, State, Moves) :-
+    findall([X,Y], validmove(Plyr, State, [X,Y]), MoveList),
+    ( MoveList == [] -> Moves = [n]
+    ; sort(MoveList, Moves)
+    ).
 
-moves(Plyr, State, [n]) :-
-    \+ validmove(Plyr, State, _), !.
-
-moves(Plyr, State, MvList) :-
-    findall([X,Y], validmove(Plyr, State, [X,Y]), Unsorted),
-    sort(Unsorted, MvList).  % sort ensures top-left to bottom-right
 
 
 
@@ -218,25 +217,24 @@ nextState(Plyr, [X,Y], State, NewState, NextPlyr) :-
 	%%that shouldnt be possible because validmove basically verifies
 	%%that a flip has to occur
 	flip_south(Plyr, NewBoard, [X, Y], NewBoard1),
-    % flip_north(Plyr, NewBoard1, [X, Y], NewBoard2),
-    % flip_east(Plyr, NewBoard2, [X, Y], NewBoard3),
-    % flip_west(Plyr, NewBoard3, [X, Y], NewBoard4),
-    % flip_se(Plyr, NewBoard4, [X, Y], NewBoard5),
-    % flip_sw(Plyr, NewBoard5, [X, Y], NewBoard6),
-    % flip_ne(Plyr, NewBoard6, [X, Y], NewBoard7),
-    % flip_nw(Plyr, NewBoard7, [X, Y], NewState),
-	NewState = NewBoard1, % ändra till newState sen tror jag?
+    flip_north(Plyr, NewBoard1, [X, Y], NewBoard2),
+    flip_east(Plyr, NewBoard2, [X, Y], NewBoard3),
+    flip_west(Plyr, NewBoard3, [X, Y], NewBoard4),
+    flip_se(Plyr, NewBoard4, [X, Y], NewBoard5),
+    flip_sw(Plyr, NewBoard5, [X, Y], NewBoard6),
+    flip_ne(Plyr, NewBoard6, [X, Y], NewBoard7),
+    flip_nw(Plyr, NewBoard7, [X, Y], NewBoard8),
+	% write('After flipping: '), showState(NewState), nl,
+	NewState = NewBoard8,
 	% Why?
 	opponent(Plyr, NextPlyr).
-
-%% So we dont have to verify anything here since validmove basically
-%% confirms that something already is flippable
-%% we still need to verify each stone one at a time though...
+	% write('Next player: '), write(NextPlyr), nl.
 
 % Flip stones in the south direction
 flip_south(Plyr, State, [X, Y], NewBoard) :-
     Y1 is Y + 1,
     do_flip_south(Plyr, State, [X, Y1], NewBoard).
+flip_south(_, State, _, State).
 
 % Base case: Stop flipping when we reach the player's stone
 do_flip_south(Plyr, State, [X, Y], State) :-
@@ -250,6 +248,113 @@ do_flip_south(Plyr, State, [X, Y], NewBoard) :-
     Y1 is Y + 1,
     do_flip_south(Plyr, TempBoard, [X, Y1], NewBoard).
 
+flip_north(Plyr, State, [X, Y], NewBoard) :-
+	Y1 is Y - 1,
+	do_flip_north(Plyr, State, [X, Y1], NewBoard).
+flip_north(_, State, _, State).
+
+do_flip_north(Plyr, State, [X, Y], State) :-
+	get(State, [X, Y], Plyr).
+
+do_flip_north(Plyr, State, [X, Y], NewBoard) :-
+	opponent(Plyr, Opp),
+	get(State, [X, Y], Opp),
+	set(State, TempBoard, [X, Y], Plyr),
+	Y1 is Y - 1,
+	do_flip_north(Plyr, TempBoard, [X, Y1], NewBoard).
+
+flip_east(Plyr, State, [X, Y], NewBoard) :-
+	X1 is X + 1,
+	do_flip_east(Plyr, State, [X1, Y], NewBoard).
+flip_east(_, State, _, State).
+
+do_flip_east(Plyr, State, [X, Y], State) :-
+	get(State, [X, Y], Plyr).
+
+do_flip_east(Plyr, State, [X, Y], NewBoard) :-
+	opponent(Plyr, Opp),
+	get(State, [X, Y], Opp),
+	set(State, TempBoard, [X, Y], Plyr),
+	X1 is X + 1,
+	do_flip_east(Plyr, TempBoard, [X1, Y], NewBoard).
+
+flip_west(Plyr, State, [X, Y], NewBoard) :-
+	X1 is X - 1,
+	do_flip_west(Plyr, State, [X1, Y], NewBoard).
+flip_west(_, State, _, State).
+
+do_flip_west(Plyr, State, [X, Y], State) :-
+	get(State, [X, Y], Plyr).
+
+do_flip_west(Plyr, State, [X, Y], NewBoard) :-
+	opponent(Plyr, Opp),
+	get(State, [X, Y], Opp),
+	set(State, TempBoard, [X, Y], Plyr),
+	X1 is X - 1,
+	do_flip_west(Plyr, TempBoard, [X1, Y], NewBoard).
+	
+flip_ne(Plyr, State, [X, Y], NewBoard) :-
+	X1 is X + 1, Y1 is Y - 1,
+	do_flip_ne(Plyr, State, [X1, Y1], NewBoard).
+flip_ne(_, State, _, State).
+
+do_flip_ne(Plyr, State, [X, Y], State) :-
+	get(State, [X, Y], Plyr).
+
+do_flip_ne(Plyr, State, [X, Y], NewBoard) :-
+	opponent(Plyr, Opp),
+	get(State, [X, Y], Opp),
+	set(State, TempBoard, [X, Y], Plyr),
+	X1 is X + 1, Y1 is Y - 1,
+	do_flip_ne(Plyr, TempBoard, [X1, Y1], NewBoard).
+
+
+flip_nw(Plyr, State, [X, Y], NewBoard) :-
+	X1 is X - 1, Y1 is Y - 1,
+	do_flip_nw(Plyr, State, [X1, Y1], NewBoard).
+flip_nw(_, State, _, State).
+
+do_flip_nw(Plyr, State, [X, Y], State) :-
+	get(State, [X, Y], Plyr).
+
+do_flip_nw(Plyr, State, [X, Y], NewBoard) :-
+	opponent(Plyr, Opp),
+	get(State, [X, Y], Opp),
+	set(State, TempBoard, [X, Y], Plyr),
+	X1 is X - 1, Y1 is Y - 1,
+	do_flip_nw(Plyr, TempBoard, [X1, Y1], NewBoard).
+
+flip_se(Plyr, State, [X, Y], NewBoard) :-
+	X1 is X + 1, Y1 is Y + 1,
+	do_flip_se(Plyr, State, [X1, Y1], NewBoard).
+flip_se(_, State, _, State).
+
+do_flip_se(Plyr, State, [X, Y], State) :-
+	get(State, [X, Y], Plyr).
+
+do_flip_se(Plyr, State, [X, Y], NewBoard) :-
+	opponent(Plyr, Opp),
+	get(State, [X, Y], Opp),
+	set(State, TempBoard, [X, Y], Plyr),
+	X1 is X + 1, Y1 is Y + 1,
+	do_flip_se(Plyr, TempBoard, [X1, Y1], NewBoard).
+	
+flip_sw(Plyr, State, [X, Y], NewBoard) :-
+	X1 is X - 1, Y1 is Y + 1,
+	do_flip_sw(Plyr, State, [X1, Y1], NewBoard).
+flip_sw(_, State, _, State).
+
+do_flip_sw(Plyr, State, [X, Y], State) :-
+	get(State, [X, Y], Plyr).
+
+do_flip_sw(Plyr, State, [X, Y], NewBoard) :-
+	opponent(Plyr, Opp),
+	get(State, [X, Y], Opp),
+	set(State, TempBoard, [X, Y], Plyr),
+	X1 is X - 1, Y1 is Y + 1,
+	do_flip_sw(Plyr, TempBoard, [X1, Y1], NewBoard).
+	
+
 
 
 
@@ -262,23 +367,106 @@ do_flip_south(Plyr, State, [X, Y], NewBoard) :-
 
 
 %N(North),NE(North-East),E(East),SE(South-East),S(South),SW(South-West),W(West),NW(North-West)
-
+% validmove(Plyr, State, [X,Y]) is true if a move at [X,Y] is valid in any of the 8 directions
 validmove(Plyr, State, [X,Y]) :-
-    get(State, [X,Y], '.'),           
-    opponent(Plyr, Opp),             
-    Y1 is Y + 1,
-    get(State, [X,Y1], Opp),          
-    go_south(Plyr, State, X, Y1).
+    get(State, [X,Y], '.'),
+    opponent(Plyr, Opp),
+    (
+        % Go south
+        (Y1 is Y + 1, get(State, [X,Y1], Opp), go_south(Plyr, State, X, Y1));
+        % Go north
+        (Y1 is Y - 1, get(State, [X,Y1], Opp), go_north(Plyr, State, X, Y1));
+        % Go east
+        (X1 is X + 1, get(State, [X1,Y], Opp), go_east(Plyr, State, X1, Y));
+        % Go west
+        (X1 is X - 1, get(State, [X1,Y], Opp), go_west(Plyr, State, X1, Y));
+        % Go SE
+        (X1 is X + 1, Y1 is Y + 1, get(State, [X1,Y1], Opp), go_southeast(Plyr, State, X1, Y1));
+        % Go 
+        (X1 is X - 1, Y1 is Y + 1, get(State, [X1,Y1], Opp), go_southwest(Plyr, State, X1, Y1));
+        (X1 is X + 1, Y1 is Y - 1, get(State, [X1,Y1], Opp), go_northeast(Plyr, State, X1, Y1));
+        (X1 is X - 1, Y1 is Y - 1, get(State, [X1,Y1], Opp), go_northwest(Plyr, State, X1, Y1))
+    ).
+go_south(Plyr, State, X, Y) :-
+	Y1 is Y + 1,
+	get(State, [X,Y1], Plyr).
 
 go_south(Plyr, State, X, Y) :-
-    Y2 is Y + 1,
-    get(State, [X,Y2], Plyr).
+	Y1 is Y + 1,
+	opponent(Plyr, Opp),
+	get(State, [X,Y1], Opp),
+	go_south(Plyr, State, X, Y1).
 
-go_south(Plyr, State, X, Y) :-
-    Y2 is Y + 1,
-    opponent(Plyr, Opp),  
-    get(State, [X,Y2], Opp),
-    go_south(Plyr, State, X, Y2).
+go_north(Plyr, State, X, Y) :-
+	Y1 is Y - 1,
+	get(State, [X,Y1], Plyr).
+
+go_north(Plyr, State, X, Y) :-
+	Y1 is Y - 1,
+	opponent(Plyr, Opp),
+	get(State, [X,Y1], Opp),
+	go_north(Plyr, State, X, Y1).
+
+go_east(Plyr, State, X, Y) :-
+	X1 is X + 1,
+	get(State, [X1,Y], Plyr).
+
+go_east(Plyr, State, X, Y) :-
+	X1 is X + 1,
+	opponent(Plyr, Opp),
+	get(State, [X1,Y], Opp),
+	go_east(Plyr, State, X1, Y).
+	
+go_west(Plyr, State, X, Y) :-
+	X1 is X - 1,
+	get(State, [X1,Y], Plyr).
+
+go_west(Plyr, State, X, Y) :-
+	X1 is X - 1,
+	opponent(Plyr, Opp),
+	get(State, [X1,Y], Opp),
+	go_west(Plyr, State, X1, Y).
+	
+go_southeast(Plyr, State, X, Y) :-
+	X1 is X + 1, Y1 is Y + 1,
+	get(State, [X1,Y1], Plyr).
+
+go_southeast(Plyr, State, X, Y) :-
+	X1 is X + 1, Y1 is Y + 1,
+	opponent(Plyr, Opp),
+	get(State, [X1,Y1], Opp),
+	go_southeast(Plyr, State, X1, Y1).
+
+go_southwest(Plyr, State, X, Y) :-
+	X1 is X - 1, Y1 is Y + 1,
+	get(State, [X1,Y1], Plyr).
+
+go_southwest(Plyr, State, X, Y) :-
+	X1 is X - 1, Y1 is Y + 1,
+	opponent(Plyr, Opp),
+	get(State, [X1,Y1], Opp),
+	go_southwest(Plyr, State, X1, Y1).
+	
+go_northeast(Plyr, State, X, Y) :-
+	X1 is X + 1, Y1 is Y - 1,
+	get(State, [X1,Y1], Plyr).
+
+go_northeast(Plyr, State, X, Y) :-
+	X1 is X + 1, Y1 is Y - 1,
+	opponent(Plyr, Opp),
+	get(State, [X1,Y1], Opp),
+	go_northeast(Plyr, State, X1, Y1).
+
+go_northwest(Plyr, State, X, Y) :-
+	X1 is X - 1, Y1 is Y - 1,
+	get(State, [X1,Y1], Plyr).
+
+go_northwest(Plyr, State, X, Y) :-
+	X1 is X - 1, Y1 is Y - 1,
+	opponent(Plyr, Opp),
+	get(State, [X1,Y1], Opp),
+	go_northwest(Plyr, State, X1, Y1).
+
 
 
 
