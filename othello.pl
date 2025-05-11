@@ -281,6 +281,15 @@ forcing1toDoNullMoves([[.,.,.,.,.,.],
 		       [.,.,.,.,.,1],
 		       [.,1,1,1,1,2]]).
 
+out_of_bounds_test([
+[.,2,2,2,2,2],
+[2,2,2,2,2,2],
+[2,2,2,2,2,2],
+[2,2,2,2,2,2],
+[2,2,2,2,2,2],
+[2,2,2,2,2,2]
+]).
+
 
 
 
@@ -296,7 +305,7 @@ forcing1toDoNullMoves([[.,.,.,.,.,.],
 %%JAG: Vi utgår från ttt.pl och gör likadant? bara att vi binder till
 %% initBoard som vi har fått sen innan.
 initialize(InitialState,1) :-
-	forcing1toDoNullMoves(InitialState).
+	winInTwoMovesFullBoard(InitialState).
 
 
 
@@ -586,24 +595,47 @@ validmove(Plyr, State, [X,Y]) :-
     get(State, [X,Y], '.'),
     opponent(Plyr, Opp),
     (
-        (Y1 is Y + 1, get(State, [X,Y1], Opp), within_bounds(X, Y1), go_south(Plyr, State, X, Y1));
-        (Y1 is Y - 1, get(State, [X,Y1], Opp), within_bounds(X, Y1), go_north(Plyr, State, X, Y1));
-        (X1 is X + 1, get(State, [X1,Y], Opp), within_bounds(X1, Y), go_east(Plyr, State, X1, Y));
-        (X1 is X - 1, get(State, [X1,Y], Opp), within_bounds(X1, Y), go_west(Plyr, State, X1, Y));
-        (X1 is X + 1, Y1 is Y + 1, get(State, [X1,Y1], Opp), within_bounds(X1, Y1), go_southeast(Plyr, State, X1, Y1));
-        (X1 is X - 1, Y1 is Y + 1, get(State, [X1,Y1], Opp), within_bounds(X1, Y1), go_southwest(Plyr, State, X1, Y1));
-        (X1 is X + 1, Y1 is Y - 1, get(State, [X1,Y1], Opp), within_bounds(X1, Y1), go_northeast(Plyr, State, X1, Y1));
-        (X1 is X - 1, Y1 is Y - 1, get(State, [X1,Y1], Opp), within_bounds(X1, Y1), go_northwest(Plyr, State, X1, Y1))
+        (Y1 is Y + 1,
+		get(State, [X,Y1], Opp),
+		% within_bounds(X, Y1),
+		go_south(Plyr, State, X, Y1));
+        (Y1 is Y - 1, get(State, [X,Y1], Opp),
+		within_bounds(X, Y1),
+		go_north(Plyr, State, X, Y1));
+        (X1 is X + 1, get(State, [X1,Y], Opp),
+		within_bounds(X1, Y),
+		go_east(Plyr, State, X1, Y));
+        (X1 is X - 1,
+		get(State, [X1,Y], Opp),
+		within_bounds(X1, Y),
+		go_west(Plyr, State, X1, Y));
+        (X1 is X + 1, Y1 is Y + 1,
+		get(State, [X1,Y1], Opp),
+		within_bounds(X1, Y1),
+		go_southeast(Plyr, State, X1, Y1));
+        (X1 is X - 1,
+		Y1 is Y + 1,
+		get(State, [X1,Y1], Opp),
+		within_bounds(X1, Y1),
+		go_southwest(Plyr, State, X1, Y1));
+        (X1 is X + 1,
+		Y1 is Y - 1,
+		get(State, [X1,Y1], Opp),
+		within_bounds(X1, Y1),
+		go_northeast(Plyr, State, X1, Y1));
+        (X1 is X - 1,
+		Y1 is Y - 1,
+		get(State, [X1,Y1], Opp),
+		within_bounds(X1, Y1),
+		go_northwest(Plyr, State, X1, Y1))
     ).
 
 go_south(Plyr, State, X, Y) :-
     Y1 is Y + 1,
-    within_bounds(X, Y1),
     get(State, [X,Y1], Plyr).
 
 go_south(Plyr, State, X, Y) :-
     Y1 is Y + 1,
-    within_bounds(X, Y1),
     opponent(Plyr, Opp),
     get(State, [X,Y1], Opp),
     go_south(Plyr, State, X, Y1).
@@ -611,12 +643,10 @@ go_south(Plyr, State, X, Y) :-
 
 go_north(Plyr, State, X, Y) :-
     Y1 is Y - 1,
-    within_bounds(X, Y1),
     get(State, [X,Y1], Plyr).
 
 go_north(Plyr, State, X, Y) :-
     Y1 is Y - 1,
-    within_bounds(X, Y1),
     opponent(Plyr, Opp),
     get(State, [X,Y1], Opp),
     go_north(Plyr, State, X, Y1).
@@ -624,12 +654,10 @@ go_north(Plyr, State, X, Y) :-
 
 go_east(Plyr, State, X, Y) :-
     X1 is X + 1,
-    within_bounds(X1, Y),
     get(State, [X1,Y], Plyr).
 
 go_east(Plyr, State, X, Y) :-
     X1 is X + 1,
-    within_bounds(X1, Y),
     opponent(Plyr, Opp),
     get(State, [X1,Y], Opp),
     go_east(Plyr, State, X1, Y).
@@ -637,12 +665,10 @@ go_east(Plyr, State, X, Y) :-
 
 go_west(Plyr, State, X, Y) :-
     X1 is X - 1,
-    within_bounds(X1, Y),
     get(State, [X1,Y], Plyr).
 
 go_west(Plyr, State, X, Y) :-
     X1 is X - 1,
-    within_bounds(X1, Y),
     opponent(Plyr, Opp),
     get(State, [X1,Y], Opp),
     go_west(Plyr, State, X1, Y).
@@ -650,12 +676,10 @@ go_west(Plyr, State, X, Y) :-
 
 go_southeast(Plyr, State, X, Y) :-
     X1 is X + 1, Y1 is Y + 1,
-    within_bounds(X1, Y1),
     get(State, [X1,Y1], Plyr).
 
 go_southeast(Plyr, State, X, Y) :-
     X1 is X + 1, Y1 is Y + 1,
-    within_bounds(X1, Y1),
     opponent(Plyr, Opp),
     get(State, [X1,Y1], Opp),
     go_southeast(Plyr, State, X1, Y1).
@@ -663,12 +687,10 @@ go_southeast(Plyr, State, X, Y) :-
 
 go_southwest(Plyr, State, X, Y) :-
     X1 is X - 1, Y1 is Y + 1,
-    within_bounds(X1, Y1),
     get(State, [X1,Y1], Plyr).
 
 go_southwest(Plyr, State, X, Y) :-
     X1 is X - 1, Y1 is Y + 1,
-    within_bounds(X1, Y1),
     opponent(Plyr, Opp),
     get(State, [X1,Y1], Opp),
     go_southwest(Plyr, State, X1, Y1).
@@ -676,12 +698,10 @@ go_southwest(Plyr, State, X, Y) :-
 
 go_northeast(Plyr, State, X, Y) :-
     X1 is X + 1, Y1 is Y - 1,
-    within_bounds(X1, Y1),
     get(State, [X1,Y1], Plyr).
 
 go_northeast(Plyr, State, X, Y) :-
     X1 is X + 1, Y1 is Y - 1,
-    within_bounds(X1, Y1),
     opponent(Plyr, Opp),
     get(State, [X1,Y1], Opp),
     go_northeast(Plyr, State, X1, Y1).
@@ -689,12 +709,10 @@ go_northeast(Plyr, State, X, Y) :-
 
 go_northwest(Plyr, State, X, Y) :-
     X1 is X - 1, Y1 is Y - 1,
-    within_bounds(X1, Y1),
     get(State, [X1,Y1], Plyr).
 
 go_northwest(Plyr, State, X, Y) :-
     X1 is X - 1, Y1 is Y - 1,
-    within_bounds(X1, Y1),
     opponent(Plyr, Opp),
     get(State, [X1,Y1], Opp),
     go_northwest(Plyr, State, X1, Y1).
