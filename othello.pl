@@ -321,19 +321,24 @@ initialize(InitialState,1) :-
 
 winner(State, Plyr) :-
     terminal(State),
-    (checkStones(State, 1, P1),
-    checkStones(State, 2, P2),
-    P1 > P2,
-    Plyr = 2;
-	checkStones(State, 1, P1),
-    checkStones(State, 2, P2),
-    P2 > P1,
-    Plyr = 1).
+    score(State, Result),
+    win(Result, Plyr).
 
-checkStones(State, Plyr, PlyrResult) :-
-	validBoard(State),
-    findall([X,Y],(between(0,5,X),between(0,5,Y),get(State,[X,Y],Plyr)),Stones),
-    length(Stones, PlyrResult).
+win((P1Score,P2Score),1) :- P1Score < P2Score.
+win((P1Score,P2Score),2) :- P2Score < P1Score.
+
+score([], (0, 0)).
+score([Row|Rest], (P1, P2)) :-
+    score(Rest, (RestP1, RestP2)),
+    scoreEachRow(Row, (RowP1, RowP2)),
+    P1 is RestP1 + RowP1,
+    P2 is RestP2 + RowP2.
+
+scoreEachRow([], (0, 0)).
+scoreEachRow([X|T], (P1, P2)) :-
+    scoreEachRow(T, (RestP1, RestP2)),
+    (X == 1 -> P1 is RestP1 + 1; P1 is RestP1),
+    (X == 2 -> P2 is RestP2 + 1; P2 is RestP2).
 
 
 
@@ -357,10 +362,10 @@ validBoard(Board) :-
 %    - true if terminal State is a "tie" (no winner) 
 
 tie(State) :-
-	terminal(State),
-	checkStones(State, 1, P1),
-	checkStones(State, 2, P2),
-	P1 == P2.
+    terminal(State),
+    score(State, Result),
+    Result = (P1, P2),
+    P1 = P2.
 
 
 
@@ -406,12 +411,10 @@ printList([H | L]) :-
 %% 
 %% define moves(Plyr,State,MvList). 
 %   - returns list MvList of all legal moves Plyr can make in State
-%
 moves(Plyr, State, Moves) :-
     findall([X,Y], validmove(Plyr, State, [X,Y]), MoveList),
-    ( MoveList == [] -> Moves = [n]
-    ; sort(MoveList, Moves)
-    ).
+    ( MoveList == [] -> Moves = [n]; 
+	sort(MoveList, Moves)).
 
 
 
@@ -432,7 +435,6 @@ nextState(Plyr, [n], State, State, NextPlyr) :-
 nextState(Plyr, [X,Y], State, NewState, NextPlyr) :-
 	set(State,NewBoard,[X,Y],Plyr),
 
-	% Perform flips in all directions
 	flip_south(Plyr, NewBoard, [X, Y], NewBoard1),
 	flip_north(Plyr, NewBoard1, [X, Y], NewBoard2),
 	flip_east(Plyr, NewBoard2, [X, Y], NewBoard3),
@@ -448,24 +450,24 @@ nextState(Plyr, [X,Y], State, NewState, NextPlyr) :-
 	moves(Opponent, NewState, OpponentMoves),
 	( OpponentMoves == [n] -> NextPlyr = Plyr ; NextPlyr = Opponent ).
 
-% Flip stones in the south direction
+% South
 flip_south(Plyr, State, [X, Y], NewBoard) :-
     Y1 is Y + 1,
     do_flip_south(Plyr, State, [X, Y1], NewBoard).
 flip_south(_, State, _, State).
 
-% Base case: Stop flipping when we reach the player's stone
+
 do_flip_south(Plyr, State, [X, Y], State) :-
     get(State, [X, Y], Plyr).
 
-% Recursive case: Flip the opponent's stone and continue south
 do_flip_south(Plyr, State, [X, Y], NewBoard) :-
     opponent(Plyr, Opp),
     get(State, [X, Y], Opp),
-    set(State, TempBoard, [X, Y], Plyr),  % Flip the stone
+    set(State, TempBoard, [X, Y], Plyr),  
     Y1 is Y + 1,
     do_flip_south(Plyr, TempBoard, [X, Y1], NewBoard).
 
+% North
 flip_north(Plyr, State, [X, Y], NewBoard) :-
 	Y1 is Y - 1,
 	do_flip_north(Plyr, State, [X, Y1], NewBoard).
@@ -481,6 +483,7 @@ do_flip_north(Plyr, State, [X, Y], NewBoard) :-
 	Y1 is Y - 1,
 	do_flip_north(Plyr, TempBoard, [X, Y1], NewBoard).
 
+% East
 flip_east(Plyr, State, [X, Y], NewBoard) :-
 	X1 is X + 1,
 	do_flip_east(Plyr, State, [X1, Y], NewBoard).
@@ -496,6 +499,7 @@ do_flip_east(Plyr, State, [X, Y], NewBoard) :-
 	X1 is X + 1,
 	do_flip_east(Plyr, TempBoard, [X1, Y], NewBoard).
 
+% West
 flip_west(Plyr, State, [X, Y], NewBoard) :-
 	X1 is X - 1,
 	do_flip_west(Plyr, State, [X1, Y], NewBoard).
@@ -510,7 +514,8 @@ do_flip_west(Plyr, State, [X, Y], NewBoard) :-
 	set(State, TempBoard, [X, Y], Plyr),
 	X1 is X - 1,
 	do_flip_west(Plyr, TempBoard, [X1, Y], NewBoard).
-	
+
+%North-East
 flip_ne(Plyr, State, [X, Y], NewBoard) :-
 	X1 is X + 1, Y1 is Y - 1,
 	do_flip_ne(Plyr, State, [X1, Y1], NewBoard).
@@ -526,7 +531,7 @@ do_flip_ne(Plyr, State, [X, Y], NewBoard) :-
 	X1 is X + 1, Y1 is Y - 1,
 	do_flip_ne(Plyr, TempBoard, [X1, Y1], NewBoard).
 
-
+% North-West
 flip_nw(Plyr, State, [X, Y], NewBoard) :-
 	X1 is X - 1, Y1 is Y - 1,
 	do_flip_nw(Plyr, State, [X1, Y1], NewBoard).
@@ -542,6 +547,7 @@ do_flip_nw(Plyr, State, [X, Y], NewBoard) :-
 	X1 is X - 1, Y1 is Y - 1,
 	do_flip_nw(Plyr, TempBoard, [X1, Y1], NewBoard).
 
+% South-East
 flip_se(Plyr, State, [X, Y], NewBoard) :-
 	X1 is X + 1, Y1 is Y + 1,
 	do_flip_se(Plyr, State, [X1, Y1], NewBoard).
@@ -556,7 +562,7 @@ do_flip_se(Plyr, State, [X, Y], NewBoard) :-
 	set(State, TempBoard, [X, Y], Plyr),
 	X1 is X + 1, Y1 is Y + 1,
 	do_flip_se(Plyr, TempBoard, [X1, Y1], NewBoard).
-	
+% South-West
 flip_sw(Plyr, State, [X, Y], NewBoard) :-
 	X1 is X - 1, Y1 is Y + 1,
 	do_flip_sw(Plyr, State, [X1, Y1], NewBoard).
@@ -597,7 +603,7 @@ validmove(Plyr, State, [X,Y]) :-
     (
         (Y1 is Y + 1,
 		get(State, [X,Y1], Opp),
-		% within_bounds(X, Y1),
+		within_bounds(X, Y1),
 		go_south(Plyr, State, X, Y1));
         (Y1 is Y - 1, get(State, [X,Y1], Opp),
 		within_bounds(X, Y1),
