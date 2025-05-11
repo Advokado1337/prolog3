@@ -76,6 +76,215 @@ initBoard([ [.,.,.,.,.,.],
             [.,.,.,.,.,.], 
 	    [.,.,.,.,.,.] ]).
 
+%%
+%% 2. Testing to flip in various directions
+%%
+
+% both players can move but when player 1 moves, that move flips from right to left
+% along the top row
+flipRLtop([[.,1,2,2,2,.],
+	   [.,.,.,.,.,.],
+	   [.,.,.,.,.,.],
+	   [.,.,.,.,.,.],
+	   [.,.,.,.,.,.],
+	   [.,.,.,.,.,.]]).
+
+% only player 2 can move, and that move flips from left to right
+% along the bottom row
+flipLRbottom([[.,.,.,.,.,.],
+	      [.,.,.,.,.,.],
+	      [.,.,.,.,.,.],
+	      [.,.,.,.,.,.],
+	      [.,.,.,.,.,.],
+	      [.,1,1,1,1,2]]).
+
+% only player 2 can move, and that move flips from top to bottom
+% along the left column
+flipTBleft([[.,.,.,.,.,.],
+            [1,.,.,.,.,.],
+            [1,.,.,.,.,.],
+            [1,.,.,.,.,.],
+            [1,.,.,.,.,.],
+            [2,.,.,.,.,.]]).
+
+% only player 1 can move, and that move flips from bottom to top
+% along the right column
+flipBTright([[.,.,.,.,.,1],
+	     [.,.,.,.,.,2],
+	     [.,.,.,.,.,2],
+	     [.,.,.,.,.,2],
+	     [.,.,.,.,.,2],
+	     [.,.,.,.,.,.]]).
+
+% only player 1 can move, and that move flips along the main
+% diagional from upper left to lower right
+flipDiagULtoLR([[.,.,.,.,.,.],
+		[.,2,.,.,.,.],
+		[.,.,2,.,.,.],
+		[.,.,.,2,.,.],
+		[.,.,.,.,1,.],
+		[.,.,.,.,.,.]]).
+
+% only player 2 can move, and that move flips along the main
+% diagional from upper right to lower left
+flipDiagURtoLL([[.,.,.,.,.,.],
+		[.,.,.,.,1,.],
+		[.,.,.,1,.,.],
+		[.,.,1,.,.,.],
+		[.,1,.,.,.,.],
+		[2,.,.,.,.,.]]).
+
+% no moves possible, and no flips
+noMovesNoFlipsA([[1,2,1,2,1,2],
+		 [2,1,1,1,2,2],
+		 [1,1,.,1,1,1],
+		 [2,1,1,1,2,2],
+		 [1,2,1,2,1,2],
+		 [2,2,1,2,2,1]]).
+
+% no moves possible, and no flips
+noMovesNoFlipsB([[2,1,2,1,2,1],
+		 [1,2,2,2,1,1],
+		 [2,2,.,2,2,2],
+		 [1,2,2,2,1,1],
+		 [2,1,2,1,2,1],
+		 [1,1,2,1,1,2]]).
+
+% player 1 can move, and that move flips left and right only
+flipLRonly1([[.,.,.,2,.,.],
+	     [.,.,.,1,.,.],
+	     [.,.,.,1,.,.],
+	     [1,2,2,.,2,1],
+	     [.,.,.,1,.,.],
+	     [.,.,.,2,.,.]]).
+
+% only player 1 can move, and that move flips in all 8 directions
+flipAll8Dirs1([[1,2,1,2,1,2],
+	       [2,2,2,2,2,2],
+	       [1,2,.,2,2,1],
+	       [2,2,2,2,2,2],
+	       [1,2,2,2,2,2],
+	       [2,2,1,2,2,1]]).
+
+% only player 2 can move, and that move flips in all 8 directions
+flipAll8Dirs2([[2,2,2,2,2,2],
+	       [2,1,2,1,2,2],
+	       [2,2,1,1,1,2],
+	       [2,1,1,.,1,2],
+	       [2,2,1,1,1,2],
+	       [2,2,2,2,2,2]]).
+
+
+%%
+%% 3. Testing that TIE is detected
+%%
+
+% both players can make a move; then a tie with a full board
+tieInTwoMovesFullBoard([[.,2,2,1,2,2], 
+			[2,2,2,2,2,1], 
+			[2,2,2,2,2,1],
+			[2,2,2,1,1,1], 
+			[2,2,2,2,1,1],
+			[1,1,1,1,1,.]]).
+
+
+% an immediate tie with 4 unplayable squares
+tieFourEmptyInCorners([[.,2,2,2,2,.],
+		       [1,2,2,2,1,1],
+		       [1,2,2,1,1,1],
+		       [1,2,1,2,1,1],
+		       [1,1,1,1,2,1],
+		       [.,2,2,2,2,.]]).
+
+
+% an immediate tie with 2 unplayable squares
+tieFourEmptyOnBorders([[2,2,.,.,1,1],
+		       [1,1,1,2,2,2],
+		       [1,1,1,2,2,2],
+		       [1,1,1,2,2,2],
+		       [1,1,1,2,2,2],
+		       [1,1,.,.,2,2]]).
+
+
+% player 1 can make 1 move, then tie with four empty
+tieFourEmptyOnly1canMove([[.,2,2,2,2,.],
+			  [1,2,2,2,1,1],
+			  [1,2,2,1,1,1],
+			  [2,2,1,2,1,1],
+			  [.,1,1,1,2,1],
+			  [.,2,2,2,2,.]]).
+
+% only player 1 can make a move, and then it's a 3-3 tie
+tie30emptyOnly1canMove([[.,.,.,.,.,.],
+			[.,.,.,.,.,.],
+			[2,.,2,1,2,2],
+			[.,.,.,.,.,.],
+			[.,.,.,.,.,.],
+			[.,.,.,.,.,.]]).
+
+% only player 2 can make a move, and then it's a 3-3 tie
+tie30emptyOnly2canMove([[.,.,.,.,.,.],
+			[.,.,.,.,.,.],
+			[1,.,1,2,1,1],
+			[.,.,.,.,.,.],
+			[.,.,.,.,.,.],
+			[.,.,.,.,.,.]]).
+
+
+%%
+%% 4. Testing that WINNER is detected
+%%
+
+% both players can make one move each, and then player 1 wins
+winInTwoMovesFullBoard([[.,2,1,1,1,2], 
+			[2,2,2,2,2,1], 
+			[1,2,2,2,2,1],
+			[1,2,2,1,2,1], 
+			[1,2,2,2,1,1],
+			[2,1,1,1,1,.]]).
+
+% player 1 is an immediate winner, 0-36
+onlyTwos([[2,2,2,2,2,2], 
+	  [2,2,2,2,2,2],
+	  [2,2,2,2,2,2], 
+	  [2,2,2,2,2,2], 
+	  [2,2,2,2,2,2], 
+	  [2,2,2,2,2,2] ]).
+
+
+% player 2 is an immediate winner, 0-36
+onlyOnes([[1,1,1,1,1,1], 
+	  [1,1,1,1,1,1],
+	  [1,1,1,1,1,1], 
+	  [1,1,1,1,1,1], 
+	  [1,1,1,1,1,1], 
+	  [1,1,1,1,1,1] ]).
+
+
+%%
+%% 5. Testing null moves
+%%
+
+% player 2 has no move, but 1 has two; then 1 wins
+forcing2toDoNullMove([[.,.,.,.,.,.],
+		      [.,.,.,.,.,2],
+		      [.,.,.,.,.,2],
+		      [.,.,.,.,.,2],
+		      [.,.,.,.,.,2],
+		      [.,2,2,2,2,1]]).
+
+% player 1 has no moves, but 2 has two; then 2 wins
+forcing1toDoNullMoves([[.,.,.,.,.,.],
+		       [.,.,.,.,.,1],
+		       [.,.,.,.,.,1],
+		       [.,.,.,.,.,1],
+		       [.,.,.,.,.,1],
+		       [.,1,1,1,1,2]]).
+
+
+
+
+
 % DO NOT CHANGE THIS BLOCK OF COMMENTS.
 %
 %%%%%%%%%%%%%%%%%% IMPLEMENT: initialize(...)%%%%%%%%%%%%%%%%%%%%%
@@ -87,7 +296,7 @@ initBoard([ [.,.,.,.,.,.],
 %%JAG: Vi utgår från ttt.pl och gör likadant? bara att vi binder till
 %% initBoard som vi har fått sen innan.
 initialize(InitialState,1) :-
-	initBoard(InitialState).
+	forcing1toDoNullMoves(InitialState).
 
 
 
@@ -207,28 +416,28 @@ moves(Plyr, State, Moves) :-
 %     state) and NextPlayer (i.e. the next player who will move).
 %
 %set( Board, NewBoard, [X, Y], Value):
+
+nextState(Plyr, [n], State, State, NextPlyr) :-
+    opponent(Plyr, NextPlyr).
+
 nextState(Plyr, [X,Y], State, NewState, NextPlyr) :-
 	set(State,NewBoard,[X,Y],Plyr),
 
-	%% Compared to validmove which only is true
-	%% here we actually have to alter states aswell, so we have 
-	%% to pass the state along
-	%% hmm now that i think about it,
-	%%that shouldnt be possible because validmove basically verifies
-	%%that a flip has to occur
+	% Perform flips in all directions
 	flip_south(Plyr, NewBoard, [X, Y], NewBoard1),
-    flip_north(Plyr, NewBoard1, [X, Y], NewBoard2),
-    flip_east(Plyr, NewBoard2, [X, Y], NewBoard3),
-    flip_west(Plyr, NewBoard3, [X, Y], NewBoard4),
-    flip_se(Plyr, NewBoard4, [X, Y], NewBoard5),
-    flip_sw(Plyr, NewBoard5, [X, Y], NewBoard6),
-    flip_ne(Plyr, NewBoard6, [X, Y], NewBoard7),
-    flip_nw(Plyr, NewBoard7, [X, Y], NewBoard8),
-	% write('After flipping: '), showState(NewState), nl,
+	flip_north(Plyr, NewBoard1, [X, Y], NewBoard2),
+	flip_east(Plyr, NewBoard2, [X, Y], NewBoard3),
+	flip_west(Plyr, NewBoard3, [X, Y], NewBoard4),
+	flip_se(Plyr, NewBoard4, [X, Y], NewBoard5),
+	flip_sw(Plyr, NewBoard5, [X, Y], NewBoard6),
+	flip_ne(Plyr, NewBoard6, [X, Y], NewBoard7),
+	flip_nw(Plyr, NewBoard7, [X, Y], NewBoard8),
 	NewState = NewBoard8,
-	% Why?
-	opponent(Plyr, NextPlyr).
-	% write('Next player: '), write(NextPlyr), nl.
+
+	% Determine the next player
+	opponent(Plyr, Opponent),
+	moves(Opponent, NewState, OpponentMoves),
+	( OpponentMoves == [n] -> NextPlyr = Plyr ; NextPlyr = Opponent ).
 
 % Flip stones in the south direction
 flip_south(Plyr, State, [X, Y], NewBoard) :-
@@ -368,107 +577,134 @@ do_flip_sw(Plyr, State, [X, Y], NewBoard) :-
 
 %N(North),NE(North-East),E(East),SE(South-East),S(South),SW(South-West),W(West),NW(North-West)
 % validmove(Plyr, State, [X,Y]) is true if a move at [X,Y] is valid in any of the 8 directions
+
+validmove(Plyr, State, [n]) :-
+    moves(Plyr, State, Moves),
+    Moves == [n].
+
 validmove(Plyr, State, [X,Y]) :-
     get(State, [X,Y], '.'),
     opponent(Plyr, Opp),
     (
-        % Go south
-        (Y1 is Y + 1, get(State, [X,Y1], Opp), go_south(Plyr, State, X, Y1));
-        % Go north
-        (Y1 is Y - 1, get(State, [X,Y1], Opp), go_north(Plyr, State, X, Y1));
-        % Go east
-        (X1 is X + 1, get(State, [X1,Y], Opp), go_east(Plyr, State, X1, Y));
-        % Go west
-        (X1 is X - 1, get(State, [X1,Y], Opp), go_west(Plyr, State, X1, Y));
-        % Go SE
-        (X1 is X + 1, Y1 is Y + 1, get(State, [X1,Y1], Opp), go_southeast(Plyr, State, X1, Y1));
-        % Go 
-        (X1 is X - 1, Y1 is Y + 1, get(State, [X1,Y1], Opp), go_southwest(Plyr, State, X1, Y1));
-        (X1 is X + 1, Y1 is Y - 1, get(State, [X1,Y1], Opp), go_northeast(Plyr, State, X1, Y1));
-        (X1 is X - 1, Y1 is Y - 1, get(State, [X1,Y1], Opp), go_northwest(Plyr, State, X1, Y1))
+        (Y1 is Y + 1, get(State, [X,Y1], Opp), within_bounds(X, Y1), go_south(Plyr, State, X, Y1));
+        (Y1 is Y - 1, get(State, [X,Y1], Opp), within_bounds(X, Y1), go_north(Plyr, State, X, Y1));
+        (X1 is X + 1, get(State, [X1,Y], Opp), within_bounds(X1, Y), go_east(Plyr, State, X1, Y));
+        (X1 is X - 1, get(State, [X1,Y], Opp), within_bounds(X1, Y), go_west(Plyr, State, X1, Y));
+        (X1 is X + 1, Y1 is Y + 1, get(State, [X1,Y1], Opp), within_bounds(X1, Y1), go_southeast(Plyr, State, X1, Y1));
+        (X1 is X - 1, Y1 is Y + 1, get(State, [X1,Y1], Opp), within_bounds(X1, Y1), go_southwest(Plyr, State, X1, Y1));
+        (X1 is X + 1, Y1 is Y - 1, get(State, [X1,Y1], Opp), within_bounds(X1, Y1), go_northeast(Plyr, State, X1, Y1));
+        (X1 is X - 1, Y1 is Y - 1, get(State, [X1,Y1], Opp), within_bounds(X1, Y1), go_northwest(Plyr, State, X1, Y1))
     ).
-go_south(Plyr, State, X, Y) :-
-	Y1 is Y + 1,
-	get(State, [X,Y1], Plyr).
 
 go_south(Plyr, State, X, Y) :-
-	Y1 is Y + 1,
-	opponent(Plyr, Opp),
-	get(State, [X,Y1], Opp),
-	go_south(Plyr, State, X, Y1).
+    Y1 is Y + 1,
+    within_bounds(X, Y1),
+    get(State, [X,Y1], Plyr).
+
+go_south(Plyr, State, X, Y) :-
+    Y1 is Y + 1,
+    within_bounds(X, Y1),
+    opponent(Plyr, Opp),
+    get(State, [X,Y1], Opp),
+    go_south(Plyr, State, X, Y1).
+
 
 go_north(Plyr, State, X, Y) :-
-	Y1 is Y - 1,
-	get(State, [X,Y1], Plyr).
+    Y1 is Y - 1,
+    within_bounds(X, Y1),
+    get(State, [X,Y1], Plyr).
 
 go_north(Plyr, State, X, Y) :-
-	Y1 is Y - 1,
-	opponent(Plyr, Opp),
-	get(State, [X,Y1], Opp),
-	go_north(Plyr, State, X, Y1).
+    Y1 is Y - 1,
+    within_bounds(X, Y1),
+    opponent(Plyr, Opp),
+    get(State, [X,Y1], Opp),
+    go_north(Plyr, State, X, Y1).
+
 
 go_east(Plyr, State, X, Y) :-
-	X1 is X + 1,
-	get(State, [X1,Y], Plyr).
+    X1 is X + 1,
+    within_bounds(X1, Y),
+    get(State, [X1,Y], Plyr).
 
 go_east(Plyr, State, X, Y) :-
-	X1 is X + 1,
-	opponent(Plyr, Opp),
-	get(State, [X1,Y], Opp),
-	go_east(Plyr, State, X1, Y).
-	
-go_west(Plyr, State, X, Y) :-
-	X1 is X - 1,
-	get(State, [X1,Y], Plyr).
+    X1 is X + 1,
+    within_bounds(X1, Y),
+    opponent(Plyr, Opp),
+    get(State, [X1,Y], Opp),
+    go_east(Plyr, State, X1, Y).
+
 
 go_west(Plyr, State, X, Y) :-
-	X1 is X - 1,
-	opponent(Plyr, Opp),
-	get(State, [X1,Y], Opp),
-	go_west(Plyr, State, X1, Y).
-	
-go_southeast(Plyr, State, X, Y) :-
-	X1 is X + 1, Y1 is Y + 1,
-	get(State, [X1,Y1], Plyr).
+    X1 is X - 1,
+    within_bounds(X1, Y),
+    get(State, [X1,Y], Plyr).
+
+go_west(Plyr, State, X, Y) :-
+    X1 is X - 1,
+    within_bounds(X1, Y),
+    opponent(Plyr, Opp),
+    get(State, [X1,Y], Opp),
+    go_west(Plyr, State, X1, Y).
+
 
 go_southeast(Plyr, State, X, Y) :-
-	X1 is X + 1, Y1 is Y + 1,
-	opponent(Plyr, Opp),
-	get(State, [X1,Y1], Opp),
-	go_southeast(Plyr, State, X1, Y1).
+    X1 is X + 1, Y1 is Y + 1,
+    within_bounds(X1, Y1),
+    get(State, [X1,Y1], Plyr).
+
+go_southeast(Plyr, State, X, Y) :-
+    X1 is X + 1, Y1 is Y + 1,
+    within_bounds(X1, Y1),
+    opponent(Plyr, Opp),
+    get(State, [X1,Y1], Opp),
+    go_southeast(Plyr, State, X1, Y1).
+
 
 go_southwest(Plyr, State, X, Y) :-
-	X1 is X - 1, Y1 is Y + 1,
-	get(State, [X1,Y1], Plyr).
+    X1 is X - 1, Y1 is Y + 1,
+    within_bounds(X1, Y1),
+    get(State, [X1,Y1], Plyr).
 
 go_southwest(Plyr, State, X, Y) :-
-	X1 is X - 1, Y1 is Y + 1,
-	opponent(Plyr, Opp),
-	get(State, [X1,Y1], Opp),
-	go_southwest(Plyr, State, X1, Y1).
-	
-go_northeast(Plyr, State, X, Y) :-
-	X1 is X + 1, Y1 is Y - 1,
-	get(State, [X1,Y1], Plyr).
+    X1 is X - 1, Y1 is Y + 1,
+    within_bounds(X1, Y1),
+    opponent(Plyr, Opp),
+    get(State, [X1,Y1], Opp),
+    go_southwest(Plyr, State, X1, Y1).
+
 
 go_northeast(Plyr, State, X, Y) :-
-	X1 is X + 1, Y1 is Y - 1,
-	opponent(Plyr, Opp),
-	get(State, [X1,Y1], Opp),
-	go_northeast(Plyr, State, X1, Y1).
+    X1 is X + 1, Y1 is Y - 1,
+    within_bounds(X1, Y1),
+    get(State, [X1,Y1], Plyr).
+
+go_northeast(Plyr, State, X, Y) :-
+    X1 is X + 1, Y1 is Y - 1,
+    within_bounds(X1, Y1),
+    opponent(Plyr, Opp),
+    get(State, [X1,Y1], Opp),
+    go_northeast(Plyr, State, X1, Y1).
+
 
 go_northwest(Plyr, State, X, Y) :-
-	X1 is X - 1, Y1 is Y - 1,
-	get(State, [X1,Y1], Plyr).
+    X1 is X - 1, Y1 is Y - 1,
+    within_bounds(X1, Y1),
+    get(State, [X1,Y1], Plyr).
 
 go_northwest(Plyr, State, X, Y) :-
-	X1 is X - 1, Y1 is Y - 1,
-	opponent(Plyr, Opp),
-	get(State, [X1,Y1], Opp),
-	go_northwest(Plyr, State, X1, Y1).
+    X1 is X - 1, Y1 is Y - 1,
+    within_bounds(X1, Y1),
+    opponent(Plyr, Opp),
+    get(State, [X1,Y1], Opp),
+    go_northwest(Plyr, State, X1, Y1).
 
 
 
+% Bounds helper function
+within_bounds(X, Y) :-	
+	X >= 0, X =< 5,
+	Y >= 0, Y =< 5.
 
 % Helper function to keep track of player/opp stone during comparison
 players([1,2]).
